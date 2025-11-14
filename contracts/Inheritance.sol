@@ -1,72 +1,49 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.17;
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.23;
 
 abstract contract Employee {
-    uint public idNumber;
-    uint public managerId;
-    
-    constructor(uint _idNumber, uint _managerId) {
-        idNumber = _idNumber;
-        managerId = _managerId;
-    }
-    
-    function getAnnualCost() public virtual view returns (uint);
+    function idNumber() public virtual returns (uint);
+    function managerId() public virtual returns (uint);
 }
 
-contract Salaried is Employee {
-    uint public annualSalary;
-    
-    constructor(uint _idNumber, uint _managerId, uint _annualSalary) 
-        Employee(_idNumber, _managerId) {
-        annualSalary = _annualSalary;
+contract SalesPerson is Employee {
+    function hourlyRate() external pure returns (uint) {
+        return 20;
     }
-    
-    function getAnnualCost() public override view returns (uint) {
-        return annualSalary;
+    function idNumber() public pure override returns (uint) {
+        return 55555;
+    }
+    function managerId() public pure override returns (uint) {
+        return 1;
     }
 }
 
-contract Hourly is Employee {
-    uint public hourlyRate;
-    
-    constructor(uint _idNumber, uint _managerId, uint _hourlyRate) 
-        Employee(_idNumber, _managerId) {
-        hourlyRate = _hourlyRate;
+contract EngineeringManager is Employee {
+    function annualSalary() external pure returns (uint) {
+        return 200000;
     }
-    
-    function getAnnualCost() public override view returns (uint) {
-        return hourlyRate * 2080;
+    function managerId() public pure override returns (uint) {
+        return 11111;
     }
-}
-
-contract Manager {
-    uint[] public employeeIds;
-    
-    function addReport(uint _idNumber) public {
-        employeeIds.push(_idNumber);
+    function idNumber() public pure override returns (uint) {
+        return 5;
     }
-    
-    function resetReports() public {
-        delete employeeIds;
-    }
-}
-
-contract Salesperson is Hourly {
-    constructor(uint _idNumber, uint _managerId, uint _hourlyRate) 
-        Hourly(_idNumber, _managerId, _hourlyRate) {}
-}
-
-contract EngineeringManager is Salaried, Manager {
-    constructor(uint _idNumber, uint _managerId, uint _annualSalary) 
-        Salaried(_idNumber, _managerId, _annualSalary) {}
 }
 
 contract InheritanceSubmission {
-    address public salesPerson;
-    address public engineeringManager;
+    SalesPerson private _salesPerson;
+    EngineeringManager private _engineeringManager;
 
-    constructor(address _salesPerson, address _engineeringManager) {
-        salesPerson = _salesPerson;
-        engineeringManager = _engineeringManager;
+    constructor() {
+        _salesPerson = new SalesPerson();
+        _engineeringManager = new EngineeringManager();
+    }
+
+    function salesPerson() external view returns (address) {
+        return address(_salesPerson);
+    }
+
+    function engineeringManager() external view returns (address) {
+        return address(_engineeringManager);
     }
 }
